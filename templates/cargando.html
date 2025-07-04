@@ -1,0 +1,131 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Progreso de Descarga</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #0a0a0a;
+      color: #0bf;
+      text-align: center;
+      padding-top: 100px;
+    }
+    #barra {
+      width: 80%;
+      height: 25px;
+      background: #222;
+      border: 1px solid #0bf;
+      margin: 20px auto;
+      border-radius: 5px;
+    }
+    #relleno {
+      height: 100%;
+      background: #0bf;
+      width: 0%;
+      border-radius: 5px;
+    }
+    .spinner {
+        border: 8px solid rgba(0, 255, 255, 0.2);
+        border-top: 8px solid #0bf;
+        border-radius: 50%;
+        width: 80px;
+        height: 80px;
+        margin: 40px auto;
+        animation: girar 1.2s linear infinite;
+      }
+      @keyframes girar {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+    .mensaje {
+      margin-top: 20px;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <h1>⬇ Descargando archivo...</h1>
+   <div class="spinner"></div>
+   <div class="mensaje">
+       Estamos procesando tu solicitud.<br />
+      Esto puede tardar unos segundos dependiendo de la calidad y cantidad de archivos.<br />
+      <strong>¡No cierres esta ventana!</strong><br />
+      Tu contenido estará disponible en breve.
+    </div>
+  <div id="barra"><div id="relleno"></div></div>
+  <div class="mensaje" id="estado">Preparando...</div>
+
+  <script>
+    const relleno = document.getElementById("relleno");
+    const estado = document.getElementById("estado");
+
+    let progresoAnterior = 0;
+    let intentosSinCambio = 0;
+    let contadorDescarga = 0;
+    const intervalo = setInterval(() => {
+      fetch("/progreso")
+        .then(r => r.json())
+        .then(data => {
+          console.log("[🧪] Data recibida:", data);  // <-- Asegura que el redirect está
+          if (data.porcentaje !== undefined) {
+            const porcentaje = parseFloat(data.porcentaje).toFixed(1);
+            const descargados = data.descargados || 0;
+            relleno.style.width = Math.min(porcentaje, 100) + "%";
+           
+            if (porcentaje == progresoAnterior) {
+              intentosSinCambio++;
+              if (intentosSinCambio >= 10) {
+
+              estado.textContent = `⏳ Procesando siguiente elemento... (${descargados} descargados)`;
+              }
+            }else {
+              progresoAnterior = porcentaje;
+              intentosSinCambio = 0;
+              const total = data.total || 0;
+              estado.textContent = `Progreso: ${porcentaje}% - Se han descargado ${descargados} archivos`;
+             }
+
+
+            if (porcentaje == progresoAnterior) {
+              intentosSinCambio++;
+              if (intentosSinCambio >= 10) {
+                estado.textContent = `⏳ Procesando siguiente elemento... (${descargados} descargados)`;
+              }
+            } else {
+              progresoAnterior = porcentaje;
+              intentosSinCambio = 0;
+            }
+          }
+          if (data.error) {
+            estado.textContent = "❌ Error: " + data.error;
+            clearInterval(intervalo);
+            setTimeout(() => {
+              window.location.href = "/error?msg=" + encodeURIComponent(data.error);
+            }, 2000);
+          }
+
+          if (data.completado && data.redirect) {
+            estado.textContent = "✅ Descarga completa. Redirigiendo...";
+            clearInterval(intervalo);
+            setTimeout(() => {
+              // ✅ Redirección usando ruta absoluta segura
+              const ruta = new URL(data.redirect, window.location.origin);
+              console.log("[🚀] Redirigiendo a:", ruta.href);
+              window.location.href = ruta.href;
+            }, 2000);
+          }
+        })
+        .catch(err => {
+          estado.textContent = "⚠️ Error consultando progreso";
+        });
+      
+    }, 1000); // 🔁 Intervalo de 1 segundo
+  </script>
+</body>
+</html>

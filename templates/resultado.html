@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Descarga completa</title>
+    <style>
+      body {
+        background-color: #0a0a0a;
+        color: #eee;
+        font-family: "Segoe UI", sans-serif;
+        text-align: center;
+        padding-top: 100px;
+      }
+      .card {
+        background: #1c1c1c;
+        border-radius: 10px;
+        display: inline-block;
+        padding: 40px;
+        box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+      }
+      h1 {
+        color: #0bf;
+        margin-bottom: 15px;
+      }
+      .titulo-video {
+        font-weight: bold;
+        margin-bottom: 20px;
+        color: #0ff;
+      }
+      .boton {
+        background-color: #0bf;
+        color: #000;
+        font-size: 18px;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 20px;
+      }
+      .boton:hover {
+        background-color: #00eaff;
+      }
+      a.volver {
+        color: #0bf;
+        display: block;
+        margin-top: 30px;
+        text-decoration: none;
+      }
+      a.volver:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>✅ ¡Descarga lista!</h1>
+      <div class="titulo-video">{{ titulo }}</div>
+      {% if zip %}
+      <a class="boton" href="{{ url_for('descarga', filename=archivo) }}">📦 Descargar ZIP (Video + Subtítulo)</a>
+      {% else %}
+      <a class="boton" href="{{ url_for('descarga', filename=archivo) }}">⬇️ Descargar Archivo</a>
+      {% endif %}
+      <div style="display: none;">
+         <a class="volver" href="/">⬅️ Volver al inicio</a>
+      </div>
+    </div>
+  </body>
+</html>
