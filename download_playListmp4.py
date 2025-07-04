@@ -42,7 +42,7 @@ def descargar_playlist_videos(url, subtitulos):
         "quiet": False,
         "ignoreerrors": True,
         "overwrites": True,
-        "ffmpeg_location": os.path.abspath("ffmpeg/bin"),
+        "ffmpeg_location": "ffmpeg/bin",
         "logger": logger,
         "prefer_ffmpeg": True,
         "keepvideo": True,             # Mantiene el video

@@ -50,7 +50,7 @@ def descargar_video(url, audio=False, calidad="best", subtitulos=False):
         "quiet": False,
         "ignoreerrors": True,
         "overwrites": True,
-        "ffmpeg_location": os.path.abspath("ffmpeg/bin"),
+        "ffmpeg_location": "ffmpeg/bin",
         "logger": logger,
         "progress_hooks": [hook_progreso],
         # 👇 Esto es lo nuevo
